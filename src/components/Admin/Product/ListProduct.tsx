@@ -12,7 +12,7 @@ import HandleProduct from "./HandleProduct";
 
 export default function ProductsComponent() {
   const [open, setOpen] = useState(false);
-  const { mutate: deleteProduct, isPending } = useDeleteProduct();
+  const { mutate: deleteProduct } = useDeleteProduct();
 
   const [detailProduct, setDetailProduct] = useState<
     IProductCustom | undefined

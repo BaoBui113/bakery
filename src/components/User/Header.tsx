@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Cake, Search, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { LoginModal } from "./LoginModal";
 export default function Header() {
   return (
     <>
@@ -47,6 +48,7 @@ export default function Header() {
                 className="w-[200px] pl-8 md:w-[200px] lg:w-[300px]"
               />
             </form>
+            <LoginModal />
             <Button variant="outline" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
               <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-xs text-white">

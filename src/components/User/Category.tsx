@@ -1,23 +1,37 @@
 "use client";
-import { products } from "@/app/constant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getProducts } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { getCategories, getProducts, purchaseProduct } from "@/lib/api";
+import { IProduct } from "@/type";
+import { useMutation, useQueries } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 import { useState } from "react";
-
+import toast from "react-hot-toast";
 export default function Category() {
-  const [search, setSearch] = useState({
+  const [search, setSearch] = useState<{
+    page: number;
+    category: string;
+  }>({
     page: 1,
     category: "all",
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["products", search],
-    queryFn: () => getProducts(search.page, search.category),
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ["products", search],
+        queryFn: () => getProducts(search.page, search.category),
+      },
+      {
+        queryKey: ["categories"],
+        queryFn: getCategories,
+      },
+    ],
   });
-  console.log("In ra data", data);
+
+  // Extracting the responses
+  const [productsResult, categoriesResult] = results;
   return (
     <>
       {/* Categories Section */}
@@ -35,44 +49,109 @@ export default function Category() {
           <Tabs defaultValue="all" className="w-full">
             <div className="flex justify-center">
               <TabsList>
-                <TabsTrigger value="all">Tất cả</TabsTrigger>
-                <TabsTrigger value="cakes">Bánh kem</TabsTrigger>
-                <TabsTrigger value="pastries">Bánh ngọt</TabsTrigger>
-                <TabsTrigger value="cookies">Bánh quy</TabsTrigger>
+                {categoriesResult.isLoading ? (
+                  <div>Loading...</div>
+                ) : (
+                  <>
+                    {[
+                      { _id: "all", name: "Tất cả" },
+                      ...categoriesResult.data.metadata,
+                    ].map((category, index) => {
+                      return (
+                        <TabsTrigger
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setSearch({
+                              page: 1,
+                              category: category._id,
+                            });
+                          }}
+                          key={index}
+                          value={category._id}
+                        >
+                          {category.name}
+                        </TabsTrigger>
+                      );
+                    })}
+                  </>
+                )}
               </TabsList>
             </div>
-            <TabsContent value="all" className="mt-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="cakes" className="mt-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {products
-                  .filter((p) => p.category === "cake")
-                  .map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="pastries" className="mt-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {products
-                  .filter((p) => p.category === "pastry")
-                  .map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="cookies" className="mt-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {products
-                  .filter((p) => p.category === "cookie")
-                  .map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
+            <TabsContent value={search.category} className="mt-6">
+              <div>
+                {productsResult.isLoading ? (
+                  <div>Loading...</div>
+                ) : (
+                  <div className="flex flex-col gap-6">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                      {productsResult.data.metadata.products.map(
+                        (product: IProduct, index: number) => {
+                          return <ProductCard product={product} key={index} />;
+                        }
+                      )}
+                    </div>
+
+                    <div className="flex justify-center">
+                      {(productsResult.data.metadata.totalItems ?? 0) > 1 &&
+                        (productsResult.data.metadata.totalPages ?? 0) > 1 && (
+                          <div className="px-6 py-4 flex items-center justify-between border-t">
+                            <div className="flex space-x-1 items-end">
+                              <button className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50">
+                                {`<<`}
+                              </button>
+                              {(productsResult.data.metadata.totalItems ?? 0) >
+                                1 &&
+                                (productsResult.data.metadata.totalPages ?? 0) >
+                                  1 && (
+                                  <div className="flex gap-2 mt-4">
+                                    {Array.from(
+                                      {
+                                        length:
+                                          productsResult.data.metadata
+                                            .totalPages ?? 0,
+                                      },
+                                      (_, i) => (
+                                        <button
+                                          key={i}
+                                          onClick={() =>
+                                            setSearch &&
+                                            setSearch(
+                                              (prev: {
+                                                page: number;
+                                                category: string;
+                                              }) => ({
+                                                ...prev,
+                                                page: i + 1,
+                                              })
+                                            )
+                                          }
+                                          //   onClick={() => setCurrentPage(i + 1)}
+                                          className={`px-3 py-1 border rounded text-sm transition cursor-pointer ${
+                                            i + 1 ===
+                                            Number(
+                                              productsResult.data.metadata
+                                                .currentPage
+                                            )
+                                              ? "bg-amber-50 text-amber-700"
+                                              : "bg-white hover:bg-gray-50"
+                                          }`}
+                                        >
+                                          {i + 1}
+                                        </button>
+                                      )
+                                    )}
+                                  </div>
+                                )}
+
+                              <button className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50">
+                                {`>>`}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>
@@ -82,11 +161,28 @@ export default function Category() {
   );
 }
 // Product Card Component
-function ProductCard({ product }: { product: (typeof products)[0] }) {
+function ProductCard({ product }: { product: IProduct }) {
+  const t = Cookies.get("userToken") ?? "";
+  const mutation = useMutation({
+    mutationFn: (data: IProduct) => purchaseProduct(data._id, 1, t),
+    onSuccess: (data) => {
+      toast.success("Thêm vào giỏ hàng thành công", { duration: 4000 });
+      console.log("Purchase success:", data);
+    },
+    onError: (error) => {
+      toast.error("Them gio hang thất bại", { duration: 4000 });
+      console.log("them gio hang error:", error);
+    },
+  });
+  const handleBuyProduct = (product: IProduct) => {
+    mutation.mutate(product);
+  };
   return (
     <Card className="overflow-hidden">
       <img
-        src={product.image || "/placeholder.svg"}
+        src={
+          "https://c.pxhere.com/photos/87/e0/food_cake_on_white-655658.jpg!d"
+        }
         alt={product.name}
         className="aspect-square w-full object-cover"
         width={200}
@@ -100,7 +196,10 @@ function ProductCard({ product }: { product: (typeof products)[0] }) {
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full bg-rose-500 hover:bg-rose-600">
+        <Button
+          onClick={() => handleBuyProduct(product)}
+          className="w-full bg-rose-500 hover:bg-rose-600 cursor-pointer"
+        >
           Thêm vào giỏ hàng
         </Button>
       </CardFooter>
