@@ -2,7 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getCategories, getProducts, purchaseProduct } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
+import { ICart, useCart } from "@/context/CartContext";
+import { useModal } from "@/context/ModalContext";
+import { addToCart, getCategories, getProducts } from "@/lib/api";
 import { IProduct } from "@/type";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import Cookies from "js-cookie";
@@ -125,7 +128,6 @@ export default function Category() {
                                               })
                                             )
                                           }
-                                          //   onClick={() => setCurrentPage(i + 1)}
                                           className={`px-3 py-1 border rounded text-sm transition cursor-pointer ${
                                             i + 1 ===
                                             Number(
@@ -162,11 +164,26 @@ export default function Category() {
 }
 // Product Card Component
 function ProductCard({ product }: { product: IProduct }) {
+  const { user } = useAuth();
+  const { setCart, setCountCart } = useCart();
+  const { handleOpenLogin } = useModal();
   const t = Cookies.get("userToken") ?? "";
   const mutation = useMutation({
-    mutationFn: (data: IProduct) => purchaseProduct(data._id, 1, t),
+    mutationFn: (data: IProduct) => addToCart(data._id, 1, t),
     onSuccess: (data) => {
       toast.success("Thêm vào giỏ hàng thành công", { duration: 4000 });
+      const customData = data.metadata.map((item: ICart) => {
+        return {
+          product: item.product,
+          quantity: item.quantity,
+        };
+      });
+      setCart(customData);
+      const totalQuantity = customData.reduce(
+        (sum: number, item: ICart) => sum + item.quantity,
+        0
+      );
+      setCountCart(totalQuantity);
       console.log("Purchase success:", data);
     },
     onError: (error) => {
@@ -175,6 +192,10 @@ function ProductCard({ product }: { product: IProduct }) {
     },
   });
   const handleBuyProduct = (product: IProduct) => {
+    if (!user) {
+      handleOpenLogin();
+      return;
+    }
     mutation.mutate(product);
   };
   return (

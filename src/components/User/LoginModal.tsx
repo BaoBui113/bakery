@@ -15,19 +15,23 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
+import { useModal } from "@/context/ModalContext";
 
 export function LoginModal() {
-  const [open, setOpen] = useState(false);
+  const {
+    openLogin: open,
+    setOpenLogin: setOpen,
+    handleCloseLogin,
+  } = useModal();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, user, logout } = useAuth();
+  const { login, user } = useAuth();
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -39,12 +43,12 @@ export function LoginModal() {
   };
 
   useEffect(() => {
-    if (user) setOpen(false);
+    if (user) handleCloseLogin();
   }, [user]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      {/* <DialogTrigger asChild>
         {!!user ? (
           <div className="flex gap-2 items-center cursor-pointer">
             <span>{user.name}</span>
@@ -63,7 +67,7 @@ export function LoginModal() {
             Đăng nhập
           </Button>
         )}
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">

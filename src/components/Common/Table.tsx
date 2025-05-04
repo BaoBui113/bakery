@@ -12,7 +12,7 @@ interface CommonTableProps<T> {
   totalItems?: number;
   totalPages?: number;
   currentPage?: number;
-  setSearch?: Function;
+  setSearch?: any;
   search?: string;
 }
 
@@ -51,7 +51,7 @@ export function CommonTable<T>({
       {(totalItems ?? 0) > 1 && (totalPages ?? 0) > 1 && (
         <div className="px-6 py-4 flex items-center justify-between border-t">
           <div className="text-sm text-gray-500">
-            {` Hiển thị ${currentPage}-${data.length} của ${totalItems} sản phẩm`}
+            {`Hiển thị ${currentPage}-${data.length} của ${totalItems} sản phẩm`}
           </div>
           <div className="flex space-x-1 items-end">
             <button className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50">

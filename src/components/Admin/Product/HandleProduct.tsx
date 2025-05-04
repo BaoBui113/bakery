@@ -104,10 +104,22 @@ export default function HandleProduct({
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!detailProduct) {
-      mutation.mutate(values);
+      mutation.mutate({
+        name: values.name,
+        category_id: values.category_id,
+        description: values.description,
+        price: values.price,
+        stock: values.stock,
+      });
       return;
     }
-    mutationUpdate.mutate(values);
+    mutationUpdate.mutate({
+      name: values.name,
+      category_id: values.category_id,
+      description: values.description,
+      price: values.price,
+      stock: values.stock,
+    });
   }
 
   useEffect(() => {

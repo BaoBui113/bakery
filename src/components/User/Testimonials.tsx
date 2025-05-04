@@ -37,8 +37,8 @@ export default function Testimonials() {
                 </div>
               </div>
               <p className="mt-4 text-muted-foreground">
-                "Bánh ngọt ở đây thật tuyệt vời! Tôi đặc biệt yêu thích bánh kem
-                chocolate của họ."
+                {`"Bánh ngọt ở đây thật tuyệt vời! Tôi đặc biệt yêu thích bánh kem
+                chocolate của họ."`}
               </p>
             </div>
             <div className="rounded-lg border bg-background p-6">
@@ -62,8 +62,8 @@ export default function Testimonials() {
                 </div>
               </div>
               <p className="mt-4 text-muted-foreground">
-                "Dịch vụ giao hàng nhanh chóng và bánh luôn tươi mới. Tôi sẽ
-                tiếp tục ủng hộ!"
+                {`"Dịch vụ giao hàng nhanh chóng và bánh luôn tươi mới. Tôi sẽ
+                tiếp tục ủng hộ!"`}
               </p>
             </div>
             <div className="rounded-lg border bg-background p-6">
@@ -87,8 +87,8 @@ export default function Testimonials() {
                 </div>
               </div>
               <p className="mt-4 text-muted-foreground">
-                "Bánh quy ở đây thật ngon! Tôi đã đặt cho cả văn phòng và mọi
-                người đều thích."
+                {`"Bánh quy ở đây thật ngon! Tôi đã đặt cho cả văn phòng và mọi
+                người đều thích."`}
               </p>
             </div>
           </div>

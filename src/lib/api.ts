@@ -84,3 +84,90 @@ export const purchaseProduct = async (
   if (!res.ok) throw new Error("Failed to fetch user data");
   return data;
 };
+
+export const addToCart = async (
+  productId: string,
+  quantity: number,
+  token: string
+) => {
+  console.log("productId", productId);
+
+  const res = await fetch(`${API_URL}cart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      productId,
+      quantity,
+    }),
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+
+export const getCart = async (token: string) => {
+  const res = await fetch(`${API_URL}cart`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+
+export const removeFromCart = async (productId: string, token: string) => {
+  const res = await fetch(`${API_URL}cart/${productId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+
+export const updateCart = async (
+  quantity: number,
+  productId: string,
+  token: string
+) => {
+  const res = await fetch(`${API_URL}cart`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      productId,
+      quantity,
+    }),
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+
+export const checkout = async (token: string) => {
+  const res = await fetch(`${API_URL}orders/checkout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};

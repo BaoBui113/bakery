@@ -1,6 +1,10 @@
 import { AuthProvider } from "@/context/AuthContext";
 import QueryProvider from "@/Providers/QueryClientProvider ";
 
+import Footer from "@/components/User/Footer";
+import Header from "@/components/User/Header";
+import { CartProvider } from "@/context/CartContext";
+import { ModalProvider } from "@/context/ModalContext";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
@@ -31,7 +35,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <ModalProvider>
+            <AuthProvider>
+              <CartProvider>
+                <Header />
+                {children}
+                <Footer />
+              </CartProvider>
+            </AuthProvider>
+          </ModalProvider>
         </QueryProvider>
 
         <Toaster />
