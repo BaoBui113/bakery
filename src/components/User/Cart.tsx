@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ICart, useCart } from "@/context/CartContext";
+import { formatPrice } from "@/helper/formatPrice";
 import { useDeleteCart, useUpdateCart } from "@/hook/useCart";
 import { useCheckout } from "@/hook/useOrder";
 
@@ -92,12 +93,6 @@ export default function CartPage() {
   const total = subtotal + shipping;
 
   // Format price in VND
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
 
   return (
     <div className="container mx-auto py-10 px-4">

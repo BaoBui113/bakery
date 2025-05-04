@@ -29,3 +29,17 @@ export interface IProductCustom extends Omit<IProduct, "category_id"> {
   id: number;
   category: ICategory;
 }
+export interface IUser {
+  _id: string;
+  email: string;
+  name: string;
+  password: string;
+  phoneNumber: string;
+}
+export interface IOrder {
+  _id: string;
+  status: string;
+  quantity: number;
+  productId: IProduct;
+  userId: IUser;
+}

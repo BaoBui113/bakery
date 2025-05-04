@@ -1,8 +1,6 @@
 import { AuthProvider } from "@/context/AuthContext";
 import QueryProvider from "@/Providers/QueryClientProvider ";
 
-import Footer from "@/components/User/Footer";
-import Header from "@/components/User/Header";
 import { CartProvider } from "@/context/CartContext";
 import { ModalProvider } from "@/context/ModalContext";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -38,9 +36,9 @@ export default function RootLayout({
           <ModalProvider>
             <AuthProvider>
               <CartProvider>
-                <Header />
+           
                 {children}
-                <Footer />
+          
               </CartProvider>
             </AuthProvider>
           </ModalProvider>

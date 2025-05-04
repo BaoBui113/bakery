@@ -1,3 +1,5 @@
+import Footer from "@/components/User/Footer";
+import Header from "@/components/User/Header";
 import HomePage from "@/components/User/HomePage";
 import { getCategories, getProducts } from "@/lib/api";
 
@@ -27,7 +29,9 @@ export default async function Home() {
 
   return (
     <HydrationBoundary state={dehydratedState}>
+      <Header />
       <HomePage />
+      <Footer />
     </HydrationBoundary>
   );
 }
