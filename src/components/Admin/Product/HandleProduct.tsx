@@ -59,8 +59,6 @@ export default function HandleProduct({
   detailProduct?: IProductCustom;
   setDetailProduct: (detailProduct: IProductCustom | undefined) => void;
 }) {
-  console.log("detailProduct", detailProduct);
-
   const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,21 +75,18 @@ export default function HandleProduct({
     mutationFn: (data: IProductForm) => createProduct(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      console.log("create product success:", data);
       toast.success("Tạo sản phẩm thành công", { duration: 4000 });
       form.reset();
       setOpen(false);
     },
     onError: (error) => {
       toast.error("Tạo sản phẩm thất bại", { duration: 4000 });
-      console.log("create product error:", error);
     },
   });
   const mutationUpdate = useMutation({
     mutationFn: (data: IProductForm) => updateProduct(data, detailProduct!._id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      console.log("update product success:", data);
       toast.success("Cập nhật sản phẩm thành công", { duration: 4000 });
       form.reset();
       setOpen(false);
@@ -99,7 +94,6 @@ export default function HandleProduct({
     },
     onError: (error) => {
       toast.error("Cập nhật sản phẩm thất bại", { duration: 4000 });
-      console.log("update product error:", error);
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {

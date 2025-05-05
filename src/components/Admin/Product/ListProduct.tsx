@@ -114,7 +114,9 @@ export default function ProductsComponent() {
           <h1 className="text-2xl font-bold text-gray-800">Quản lý sản phẩm</h1>
           <DialogTrigger asChild>
             <button
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                setOpen(true);
+              }}
               className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
             >
               <Plus className="h-5 w-5 mr-1" />

@@ -43,3 +43,9 @@ export interface IOrder {
   productId: IProduct;
   userId: IUser;
 }
+
+export interface IOrderForm {
+  orderId: string;
+  userId: string;
+  quantity: number;
+}

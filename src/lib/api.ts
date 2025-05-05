@@ -90,8 +90,6 @@ export const addToCart = async (
   quantity: number,
   token: string
 ) => {
-  console.log("productId", productId);
-
   const res = await fetch(`${API_URL}cart`, {
     method: "POST",
     headers: {
@@ -165,6 +163,23 @@ export const checkout = async (token: string) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+
+export const confirmOrder = async (token: string, orderId: string) => {
+  const res = await fetch(`${API_URL}orders/confirm`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      orderId,
+    }),
   });
   const data = await res.json();
   console.log("In ra res", data);

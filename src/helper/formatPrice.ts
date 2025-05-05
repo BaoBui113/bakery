@@ -12,7 +12,7 @@ export const formatStatus = (status: string) => {
         label: "Đang chờ xử lý",
         className: "bg-yellow-100 text-yellow-800",
       };
-    case "confirmed":
+    case "paid":
       return { label: "Đã xác nhận", className: "bg-blue-100 text-blue-800" };
     case "shipping":
       return {

@@ -1,5 +1,6 @@
 "use client";
 import { CommonTable } from "@/components/Common/Table";
+import { DialogTrigger } from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -7,16 +8,25 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatPrice, formatStatus } from "@/helper/formatPrice";
+import { useCancelCart, useConfirmCart } from "@/hook/useCart";
+
 import { getOrders } from "@/services/admin/order";
-import { IOrder } from "@/type";
+import { IOrder, IOrderForm } from "@/type";
+import { Dialog } from "@radix-ui/react-dialog";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Pencil, X } from "lucide-react";
+import { useState } from "react";
+import ModalOrder from "./ModalOrder";
+
 export default function ListOrders() {
+  const [orderDetail, setOrderDetail] = useState<IOrderForm | null>(null);
+  const [open, setOpen] = useState(false);
   const { data: listOrders, isLoading } = useQuery({
     queryKey: ["orders", JSON.stringify({ page: 1 })],
     queryFn: getOrders,
   });
-  console.log("data", listOrders);
+  const { mutate: handleConfirmCart } = useConfirmCart();
+  const { mutate: handleCancel } = useCancelCart();
   const columns = [
     {
       key: "productId",
@@ -85,37 +95,60 @@ export default function ListOrders() {
             <div className="flex space-x-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    className="text-yellow-500 hover:text-yellow-700 cursor-pointer p-1.5 rounded-full hover:bg-yellow-50"
-                    aria-label="Chỉnh sửa"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
+                  <DialogTrigger asChild>
+                    <button
+                      onClick={() => {
+                        setOpen(true);
+                        setOrderDetail({
+                          orderId: order._id,
+                          userId: order.userId._id,
+                          quantity: order.quantity,
+                        });
+                      }}
+                      className="text-yellow-500 hover:text-yellow-700 cursor-pointer p-1.5 rounded-full hover:bg-yellow-50"
+                      aria-label="Chỉnh sửa"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Chỉnh sửa</p>
                 </TooltipContent>
               </Tooltip>
-
               {order.status === "pending" && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() =>
+                        handleConfirmCart({
+                          orderId: order._id,
+                          userId: order.userId._id,
+                        })
+                      }
+                      className="text-blue-500 hover:text-blue-700 cursor-pointer p-1.5 rounded-full hover:bg-blue-50"
+                      aria-label="Xác nhận"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Xác nhận</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+
+              {order.status !== "cancelled" && (
                 <>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
-                        className="text-blue-500 hover:text-blue-700 cursor-pointer p-1.5 rounded-full hover:bg-blue-50"
-                        aria-label="Xác nhận"
-                      >
-                        <Check className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Xác nhận</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
+                        onClick={() =>
+                          handleCancel({
+                            orderId: order._id,
+                            userId: order.userId._id,
+                          })
+                        }
                         className="text-red-500 hover:text-red-700 cursor-pointer p-1.5 rounded-full hover:bg-red-50"
                         aria-label="Hủy"
                       >
@@ -135,7 +168,7 @@ export default function ListOrders() {
     },
   ];
   return (
-    <>
+    <Dialog open={open} onOpenChange={setOpen}>
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         {isLoading ? (
           <div className="p-4">Loading...</div>
@@ -167,6 +200,9 @@ export default function ListOrders() {
           />
         )}
       </div>
-    </>
+      {orderDetail && (
+        <ModalOrder setOpen={setOpen} open={open} orderDetail={orderDetail} />
+      )}
+    </Dialog>
   );
 }
