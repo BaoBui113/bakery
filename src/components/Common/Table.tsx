@@ -24,6 +24,8 @@ export function CommonTable<T>({
   currentPage,
   setSearch,
 }: CommonTableProps<T>) {
+  console.log("data", data);
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -51,7 +53,7 @@ export function CommonTable<T>({
       {(totalItems ?? 0) > 1 && (totalPages ?? 0) > 1 && (
         <div className="px-6 py-4 flex items-center justify-between border-t">
           <div className="text-sm text-gray-500">
-            {`Hiển thị ${currentPage}-${data.length} của ${totalItems} sản phẩm`}
+            {`Hiển thị ${currentPage}-${totalPages} của ${totalItems} sản phẩm`}
           </div>
           <div className="flex space-x-1 items-end">
             <button className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50">

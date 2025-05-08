@@ -36,12 +36,34 @@ export interface IUser {
   password: string;
   phoneNumber: string;
 }
+
+export interface IFilter {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
+
 export interface IOrder {
   _id: string;
   status: string;
   quantity: number;
-  productId: IProduct;
-  userId: IUser;
+  category: {
+    _id: string;
+    name: string;
+  };
+  product: {
+    _id: string;
+    name: string;
+    price: number;
+    image_url?: string;
+  };
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    role: string;
+  };
 }
 
 export interface IOrderForm {

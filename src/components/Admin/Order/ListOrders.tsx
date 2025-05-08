@@ -10,6 +10,13 @@ import {
 import { formatPrice, formatStatus } from "@/helper/formatPrice";
 import { useCancelCart, useConfirmCart } from "@/hook/useCart";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getOrders } from "@/services/admin/order";
 import { IOrder, IOrderForm } from "@/type";
 import { Dialog } from "@radix-ui/react-dialog";
@@ -17,43 +24,82 @@ import { useQuery } from "@tanstack/react-query";
 import { Check, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import ModalOrder from "./ModalOrder";
+import { TableFilter } from "./TableFilter";
 
 export default function ListOrders() {
+  const [search, setSearch] = useState<{
+    field: string;
+    value: string;
+    page: number;
+  }>({
+    field: "",
+    value: "",
+    page: 1,
+  });
   const [orderDetail, setOrderDetail] = useState<IOrderForm | null>(null);
   const [open, setOpen] = useState(false);
   const { data: listOrders, isLoading } = useQuery({
-    queryKey: ["orders", JSON.stringify({ page: 1 })],
+    queryKey: ["orders", JSON.stringify(search)],
     queryFn: getOrders,
   });
   const { mutate: handleConfirmCart } = useConfirmCart();
   const { mutate: handleCancel } = useCancelCart();
+  const handleFilter = (field: string, value: string) => {
+    setSearch({
+      field,
+      value,
+      page: 1,
+    });
+  };
+
+  const clearFilters = () => {
+    setSearch({
+      field: "",
+      value: "",
+      page: 1,
+    });
+  };
+
+  const filterOptions = [
+    { key: "product.name", label: "Tên sản phẩm" },
+    { key: "category.name", label: "Tên danh mục" },
+    { key: "user.name", label: "Người đặt hàng" },
+    { key: "user.phoneNumber", label: "Số điện thoại" },
+  ];
+  const filterStatus = [
+    { key: "all", label: "Tất cả" },
+    { key: "pending", label: "Đang chờ xử lý" },
+    { key: "paid", label: "Đã xác nhận" },
+    { key: "cancelled", label: "Đã hủy" },
+  ];
+
   const columns = [
     {
       key: "productId",
       header: "Tên sản phẩm",
       render: (order: IOrder) => {
-        return <span>{order.productId.name}</span>;
+        return <span>{order.product.name}</span>;
       },
     },
     {
       key: "category_id",
       header: "Tên danh mục",
       render: (order: IOrder) => {
-        return <span>{order.productId.category_id.name}</span>;
+        return <span>{order.category.name}</span>;
       },
     },
     {
       key: "userId",
       header: "Người đặt hàng",
       render: (order: IOrder) => {
-        return <span>{order.userId.name}</span>;
+        return <span>{order.user.name}</span>;
       },
     },
     {
       key: "phone",
       header: "Số điện thoại",
       render: (order: IOrder) => {
-        return <span>{order.userId.phoneNumber}</span>;
+        return <span>{order.user.phoneNumber}</span>;
       },
     },
     {
@@ -67,9 +113,7 @@ export default function ListOrders() {
       key: "totalPrice",
       header: "Tổng tiền",
       render: (order: IOrder) => {
-        return (
-          <span>{formatPrice(order.productId.price * order.quantity)}</span>
-        );
+        return <span>{formatPrice(order.product.price * order.quantity)}</span>;
       },
     },
     {
@@ -101,7 +145,7 @@ export default function ListOrders() {
                         setOpen(true);
                         setOrderDetail({
                           orderId: order._id,
-                          userId: order.userId._id,
+                          userId: order.user._id,
                           quantity: order.quantity,
                         });
                       }}
@@ -123,7 +167,7 @@ export default function ListOrders() {
                       onClick={() =>
                         handleConfirmCart({
                           orderId: order._id,
-                          userId: order.userId._id,
+                          userId: order.user._id,
                         })
                       }
                       className="text-blue-500 hover:text-blue-700 cursor-pointer p-1.5 rounded-full hover:bg-blue-50"
@@ -146,7 +190,7 @@ export default function ListOrders() {
                         onClick={() =>
                           handleCancel({
                             orderId: order._id,
-                            userId: order.userId._id,
+                            userId: order.user._id,
                           })
                         }
                         className="text-red-500 hover:text-red-700 cursor-pointer p-1.5 rounded-full hover:bg-red-50"
@@ -169,34 +213,46 @@ export default function ListOrders() {
   ];
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      <div className="w-full flex gap-4">
+        <TableFilter
+          options={filterOptions}
+          onFilter={handleFilter}
+          onClear={clearFilters}
+        />
+        <Select
+          onValueChange={(value) => {
+            setSearch((prev) => ({
+              ...prev,
+              field: "status",
+              value: value === "all" ? "" : value,
+              page: 1,
+            }));
+          }}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Chọn trường lọc" />
+          </SelectTrigger>
+          <SelectContent>
+            {filterStatus.map((option, index) => (
+              <SelectItem key={index} value={option.key}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         {isLoading ? (
           <div className="p-4">Loading...</div>
         ) : (
           <CommonTable
-            currentPage={1}
-            totalItems={1}
-            totalPages={1}
+            currentPage={listOrders?.metadata?.currentPage ?? 1}
             columns={columns}
-            //   setSearch={setSearch}
-            //   data={productsQuery.data.metadata.products.map(
-            // 	(item: IProduct, index: number) => {
-            // 	  return {
-            // 		id: index + 1,
-            // 		name: item.name,
-            // 		category: {
-            // 		  name: item.category_id.name,
-            // 		  _id: item.category_id._id,
-            // 		},
-            // 		_id: item._id,
-            // 		description: item.description,
-            // 		price: item.price,
-            // 		stock: item.stock,
-            // 		status: item.stock > 0 ? "Còn hàng" : "Hết hàng",
-            // 	  };
-            // 	}
-            //   )}
-            data={listOrders?.metadata ?? []}
+            totalItems={listOrders?.metadata?.totalItems ?? 0}
+            totalPages={listOrders?.metadata?.totalPages ?? 0}
+            setSearch={setSearch}
+            data={listOrders?.metadata?.items ?? []}
           />
         )}
       </div>
