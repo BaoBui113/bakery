@@ -35,6 +35,16 @@ export interface IUser {
   name: string;
   password: string;
   phoneNumber: string;
+  type: "banned" | "active";
+  gender: "male" | "female";
+}
+
+export interface IUserForm {
+  email?: string;
+  name?: string;
+  password?: string;
+  phoneNumber?: string;
+  gender?: "male" | "female";
 }
 
 export interface IFilter {

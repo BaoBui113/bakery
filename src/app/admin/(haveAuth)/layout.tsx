@@ -9,7 +9,8 @@ export default function LayoutAdmin({
   return (
     <div className="flex h-screen bg-gray-50">
       <SideBar />
-      <div className="p-4">{children}</div>
+
+      <div className="p-4 w-full flex-1">{children}</div>
     </div>
   );
 }

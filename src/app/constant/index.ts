@@ -3,7 +3,6 @@ import {
   CakeSlice,
   ClipboardList,
   Home,
-  Package,
   Settings,
   ShoppingCart,
   Users,
@@ -13,7 +12,7 @@ export const navItems = [
   { name: "Sản phẩm", href: "/admin/products", icon: CakeSlice },
   { name: "Đơn hàng", href: "/admin/orders", icon: ShoppingCart },
   { name: "Khách hàng", href: "/admin/customers", icon: Users },
-  { name: "Kho hàng", href: "/admin/inventory", icon: Package },
+
   { name: "Báo cáo", href: "/admin/reports", icon: BarChart3 },
   { name: "Công thức", href: "/admin/recipes", icon: ClipboardList },
   { name: "Cài đặt", href: "/admin/settings", icon: Settings },
