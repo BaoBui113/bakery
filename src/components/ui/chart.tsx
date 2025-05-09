@@ -1,7 +1,14 @@
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -9,9 +16,16 @@ import {
 } from "recharts";
 
 export {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,

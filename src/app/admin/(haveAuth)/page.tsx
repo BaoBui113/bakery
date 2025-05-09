@@ -1,7 +1,9 @@
+import { DashboardContent } from "@/components/Admin/MainAdmin";
+
 export default function Admin() {
   return (
     <>
-      <h3>Xin chao</h3>
+      <DashboardContent />
     </>
   );
 }
