@@ -7,7 +7,7 @@ export default function LayoutAdmin({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50">
       <SideBar />
 
       <div className="p-4 w-full flex-1">{children}</div>
