@@ -100,6 +100,10 @@ export default function HandleProduct({
       toast.success("Tạo sản phẩm thành công", { duration: 4000 });
       form.reset();
       setOpen(false);
+      setImage({
+        publicId: "",
+        url: "",
+      });
     },
     onError: (error) => {
       toast.error("Tạo sản phẩm thất bại", { duration: 4000 });
@@ -173,6 +177,7 @@ export default function HandleProduct({
         stock: values.stock,
         image: image,
       });
+
       return;
     }
     mutationUpdate.mutate({
@@ -184,6 +189,7 @@ export default function HandleProduct({
       image: image,
     });
   }
+  console.log("detailProduct", detailProduct);
 
   useEffect(() => {
     if (detailProduct) {
@@ -192,6 +198,10 @@ export default function HandleProduct({
       form.setValue("description", detailProduct.description);
       form.setValue("price", detailProduct.price);
       form.setValue("stock", detailProduct.stock);
+      setImage({
+        publicId: detailProduct.image?.publicId || "",
+        url: detailProduct.image?.url || "",
+      });
     } else {
       form.reset();
       setImage({

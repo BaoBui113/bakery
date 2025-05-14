@@ -41,6 +41,7 @@ export default function ProductsComponent() {
   const handleDeleteProduct = (id: string) => {
     deleteProduct(id);
   };
+
   const columns = [
     {
       key: "name",
@@ -91,6 +92,8 @@ export default function ProductsComponent() {
           <button
             onClick={() => {
               setDetailProduct(product);
+              console.log("product", product.image);
+
               setOpen(true);
             }}
             className="text-amber-600 hover:text-amber-900"
@@ -112,7 +115,6 @@ export default function ProductsComponent() {
       open={open}
       onOpenChange={(isOpen) => {
         setOpen(isOpen);
-
 
         if (!isOpen) {
           setDetailProduct(undefined);
@@ -236,6 +238,7 @@ export default function ProductsComponent() {
                     price: item.price,
                     stock: item.stock,
                     status: item.stock > 0 ? "Còn hàng" : "Hết hàng",
+                    image: item.image,
                   };
                 }
               )}
