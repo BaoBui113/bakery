@@ -184,11 +184,9 @@ function ProductCard({ product }: { product: IProduct }) {
         0
       );
       setCountCart(totalQuantity);
-      console.log("Purchase success:", data);
     },
     onError: (error) => {
       toast.error("Them gio hang thất bại", { duration: 4000 });
-      console.log("them gio hang error:", error);
     },
   });
   const handleBuyProduct = (product: IProduct) => {

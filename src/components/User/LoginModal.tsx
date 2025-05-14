@@ -27,6 +27,7 @@ export function LoginModal() {
     openLogin: open,
     setOpenLogin: setOpen,
     handleCloseLogin,
+    handleOpenRegister,
   } = useModal();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -48,26 +49,6 @@ export function LoginModal() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* <DialogTrigger asChild>
-        {!!user ? (
-          <div className="flex gap-2 items-center cursor-pointer">
-            <span>{user.name}</span>
-            <Button
-              onClick={() => {
-                logout();
-              }}
-              variant="destructive"
-              className="bg-amber-400 hover:bg-rose-600 cursor-pointer"
-            >
-              Đăng xuất
-            </Button>
-          </div>
-        ) : (
-          <Button variant="default" className="bg-rose-500 hover:bg-rose-600">
-            Đăng nhập
-          </Button>
-        )}
-      </DialogTrigger> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
@@ -163,12 +144,12 @@ export function LoginModal() {
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-center sm:space-x-2">
           <span className="text-sm text-center">
             Chưa có tài khoản?{" "}
-            <Link
-              href="/register"
-              className="text-rose-500 hover:text-rose-600 font-medium"
+            <div
+              onClick={handleOpenRegister}
+              className="text-rose-500 hover:text-rose-600 font-medium cursor-pointer"
             >
               Đăng ký ngay
-            </Link>
+            </div>
           </span>
         </DialogFooter>
       </DialogContent>

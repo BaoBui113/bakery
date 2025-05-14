@@ -15,6 +15,10 @@ export interface IProduct {
   price: number;
   stock: number;
   description: string;
+  image?: {
+    publicId: string;
+    url: string;
+  };
 }
 
 export interface IProductForm {
@@ -23,6 +27,10 @@ export interface IProductForm {
   name: string;
   price: number;
   stock: number;
+  image?: {
+    publicId: string;
+    url: string;
+  };
 }
 export interface IProductCustom extends Omit<IProduct, "category_id"> {
   status: string;

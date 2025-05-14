@@ -19,15 +19,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { createProduct, updateProduct } from "@/services/admin/product";
+import {
+  createProduct,
+  deleteImage,
+  updateProduct,
+  uploadImage,
+} from "@/services/admin/product";
 import { ICategory, IProductCustom, IProductForm } from "@/type";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import {
+  useMutation,
+  UseMutationResult,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
+import ProductImagePreview from "./ProductImagePreview";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -45,6 +56,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().nonnegative({
     message: "Số lượng phải là số nguyên không âm.",
   }),
+  //   image: z.string().optional(),
 });
 export default function HandleProduct({
   categories,
@@ -59,8 +71,17 @@ export default function HandleProduct({
   detailProduct?: IProductCustom;
   setDetailProduct: (detailProduct: IProductCustom | undefined) => void;
 }) {
+  const [image, setImage] = useState({
+    publicId: "",
+    url: "",
+  });
+
   const queryClient = useQueryClient();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<
+    z.infer<typeof formSchema>,
+    any,
+    z.infer<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -68,6 +89,7 @@ export default function HandleProduct({
       description: "",
       price: 0,
       stock: 0,
+      //   image: "",
     },
   });
 
@@ -83,6 +105,21 @@ export default function HandleProduct({
       toast.error("Tạo sản phẩm thất bại", { duration: 4000 });
     },
   });
+  const mutationUploadImage: UseMutationResult<any, Error, FormData, unknown> =
+    useMutation({
+      mutationFn: (data: FormData) => uploadImage(data),
+      onSuccess: (data) => {
+        toast.success("Tải lên hình ảnh thành công", { duration: 4000 });
+      },
+      onError: (error) => {
+        toast.error("Tải lên hình ảnh thất bại", { duration: 4000 });
+      },
+    });
+
+  const mutationDeleteImage = useMutation({
+    mutationFn: (publicId: string) => deleteImage(publicId),
+  });
+
   const mutationUpdate = useMutation({
     mutationFn: (data: IProductForm) => updateProduct(data, detailProduct!._id),
     onSuccess: (data) => {
@@ -96,6 +133,36 @@ export default function HandleProduct({
       toast.error("Cập nhật sản phẩm thất bại", { duration: 4000 });
     },
   });
+  const handleDeleteImage = async (e) => {
+    e.preventDefault();
+
+    try {
+      mutationDeleteImage.mutate(image.publicId);
+      setImage({
+        publicId: "",
+        url: "",
+      });
+
+      toast.success("Xóa hình ảnh thành công", { duration: 4000 });
+    } catch (error) {
+      toast.error("Xóa hình ảnh thất bại", { duration: 4000 });
+    }
+  };
+
+  const handleUploadImage = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await mutationUploadImage.mutateAsync(formData);
+      setImage({
+        publicId: res.publicId,
+        url: res.url,
+      });
+    } catch (error) {
+      toast.error("Tải lên hình ảnh thất bại", { duration: 4000 });
+    }
+  };
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!detailProduct) {
       mutation.mutate({
@@ -104,6 +171,7 @@ export default function HandleProduct({
         description: values.description,
         price: values.price,
         stock: values.stock,
+        image: image,
       });
       return;
     }
@@ -113,6 +181,7 @@ export default function HandleProduct({
       description: values.description,
       price: values.price,
       stock: values.stock,
+      image: image,
     });
   }
 
@@ -123,13 +192,80 @@ export default function HandleProduct({
       form.setValue("description", detailProduct.description);
       form.setValue("price", detailProduct.price);
       form.setValue("stock", detailProduct.stock);
+    } else {
+      form.reset();
+      setImage({
+        publicId: "",
+        url: "",
+      });
     }
   }, [detailProduct, form]);
+
   return (
-    <DialogContent className="sm:max-w-[425px]">
-      <DialogTitle>Create Product</DialogTitle>
+    <DialogContent className="sm:max-w-[425px] overflow-y-auto">
+      <DialogTitle>
+        {detailProduct ? "Edit product" : "Create product"}
+      </DialogTitle>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          style={{
+            maxHeight: "calc(100vh - 200px)",
+            overflowY: "auto",
+          }}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 overflow-y-auto"
+        >
+          <FormItem>
+            <FormLabel>Hình ảnh sản phẩm (Tùy chọn)</FormLabel>
+            <FormControl>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="product-image-upload"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file) {
+                      handleUploadImage(file);
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="product-image-upload"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer border-gray-300 hover:border-gray-400 transition-colors"
+                >
+                  {mutationUploadImage.status === "pending" ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="w-6 h-6 text-gray-500 animate-spin" />
+                    </div>
+                  ) : image.url ? (
+                    <ProductImagePreview
+                      imageUrl={image.url}
+                      onDelete={(e) => {
+                        handleDeleteImage(e);
+                      }}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-sm text-gray-600">
+                        Vui lòng chọn hình ảnh
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        (Nhấp vào đây để tải lên)
+                      </span>
+                    </div>
+                  )}
+                </label>
+              </div>
+            </FormControl>
+
+            <FormDescription>
+              Tải lên hình ảnh cho sản phẩm (không bắt buộc).
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
           <FormField
             control={form.control}
             name="name"

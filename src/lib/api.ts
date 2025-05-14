@@ -186,3 +186,75 @@ export const confirmOrder = async (token: string, orderId: string) => {
   if (!res.ok) throw new Error("Failed to fetch user data");
   return data;
 };
+
+export const sendOtp = async (email: string) => {
+  const res = await fetch(`${API_URL}auth/send-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+export const verifyOtp = async (email: string, otp: string) => {
+  const res = await fetch(`${API_URL}auth/verify-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, otp }),
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return data;
+};
+export const registerUser = async (data) => {
+  const res = await fetch(`${API_URL}auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const response = await res.json();
+  console.log("In ra res", response);
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return response;
+};
+export const checkEmail = async (email: string) => {
+  const res = await fetch(`${API_URL}auth/check-email-exist`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) {
+    return true; // Email does not exist
+  }
+  return false;
+};
+export const checkPhone = async (phoneNumber: string) => {
+  console.log("phone", phoneNumber);
+
+  const res = await fetch(`${API_URL}auth/check-phone-number-exist`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ phoneNumber }),
+  });
+  const data = await res.json();
+  console.log("In ra res", data);
+  if (!res.ok) {
+    return true; // Phone does not exist
+  }
+  return false;
+};

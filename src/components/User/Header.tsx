@@ -8,11 +8,12 @@ import { Cake, Search, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LoginModal } from "./LoginModal";
+import RegisterModal from "./RegisterModal";
 export default function Header() {
   const { user, logout } = useAuth();
   const { countCart } = useCart();
   const router = useRouter();
-  const { handleOpenLogin } = useModal();
+  const { handleOpenLogin, handleOpenRegister } = useModal();
   return (
     <>
       {/* Navigation */}
@@ -74,15 +75,25 @@ export default function Header() {
                 </Button>
               </div>
             ) : (
-              <Button
-                onClick={handleOpenLogin}
-                variant="default"
-                className="bg-rose-500 hover:bg-rose-600"
-              >
-                Đăng nhập
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  onClick={handleOpenLogin}
+                  variant="default"
+                  className="bg-rose-500 hover:bg-rose-600"
+                >
+                  Đăng nhập
+                </Button>
+                <Button
+                  onClick={handleOpenRegister}
+                  variant="default"
+                  className="bg-blue-500 hover:bg-blue-600"
+                >
+                  Đăng ký
+                </Button>
+              </div>
             )}
             <LoginModal />
+            <RegisterModal />
             {countCart > 0 && !!user && (
               <Button
                 onClick={() => {

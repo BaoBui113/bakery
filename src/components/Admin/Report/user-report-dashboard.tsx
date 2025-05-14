@@ -28,7 +28,6 @@ export default function UserReportDashboard() {
     queryKey: ["user-register", JSON.stringify(search)],
     queryFn: getUserReport,
   });
-  console.log("listReport", dataReport);
 
   // Calculate totals
   const totalUserWithTime =

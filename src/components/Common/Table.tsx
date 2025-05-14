@@ -24,8 +24,6 @@ export function CommonTable<T>({
   currentPage,
   setSearch,
 }: CommonTableProps<T>) {
-  console.log("data", data);
-
   return (
     <div className="overflow-x-auto">
       <table className="w-full">

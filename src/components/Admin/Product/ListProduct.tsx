@@ -108,7 +108,17 @@ export default function ProductsComponent() {
     },
   ];
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+
+
+        if (!isOpen) {
+          setDetailProduct(undefined);
+        }
+      }}
+    >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Quản lý sản phẩm</h1>
