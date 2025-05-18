@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LoginModal } from "./LoginModal";
 import RegisterModal from "./RegisterModal";
+import ThemeToggle from "./ThemeToggle";
 export default function Header() {
   const { user, logout } = useAuth();
   const { countCart } = useCart();
@@ -110,6 +111,7 @@ export default function Header() {
               </Button>
             )}
           </div>
+          <ThemeToggle />
         </div>
       </header>
     </>

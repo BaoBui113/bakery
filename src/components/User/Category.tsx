@@ -99,7 +99,24 @@ export default function Category() {
                         (productsResult.data.metadata.totalPages ?? 0) > 1 && (
                           <div className="px-6 py-4 flex items-center justify-between border-t">
                             <div className="flex space-x-1 items-end">
-                              <button className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50">
+                              <button
+                                className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50"
+                                onClick={() => {
+                                  setSearch((prev) => ({ ...prev, page: 1 }));
+                                  const el =
+                                    document.getElementById("products");
+                                  if (el) {
+                                    const y =
+                                      el.getBoundingClientRect().top +
+                                      window.scrollY -
+                                      100; // offset 100px
+                                    window.scrollTo({
+                                      top: y,
+                                      behavior: "smooth",
+                                    });
+                                  }
+                                }}
+                              >
                                 {`<<`}
                               </button>
                               {(productsResult.data.metadata.totalItems ?? 0) >
@@ -116,8 +133,7 @@ export default function Category() {
                                       (_, i) => (
                                         <button
                                           key={i}
-                                          onClick={() =>
-                                            setSearch &&
+                                          onClick={() => {
                                             setSearch(
                                               (prev: {
                                                 page: number;
@@ -126,8 +142,22 @@ export default function Category() {
                                                 ...prev,
                                                 page: i + 1,
                                               })
-                                            )
-                                          }
+                                            );
+                                            const el =
+                                              document.getElementById(
+                                                "products"
+                                              );
+                                            if (el) {
+                                              const y =
+                                                el.getBoundingClientRect().top +
+                                                window.scrollY -
+                                                100;
+                                              window.scrollTo({
+                                                top: y,
+                                                behavior: "smooth",
+                                              });
+                                            }
+                                          }}
                                           className={`px-3 py-1 border rounded text-sm transition cursor-pointer ${
                                             i + 1 ===
                                             Number(
@@ -145,7 +175,28 @@ export default function Category() {
                                   </div>
                                 )}
 
-                              <button className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50">
+                              <button
+                                className="px-3 py-1 border rounded text-sm bg-white hover:bg-gray-50"
+                                onClick={() => {
+                                  setSearch((prev) => ({
+                                    ...prev,
+                                    page: productsResult.data.metadata
+                                      .totalPages,
+                                  }));
+                                  const el =
+                                    document.getElementById("products");
+                                  if (el) {
+                                    const y =
+                                      el.getBoundingClientRect().top +
+                                      window.scrollY -
+                                      100;
+                                    window.scrollTo({
+                                      top: y,
+                                      behavior: "smooth",
+                                    });
+                                  }
+                                }}
+                              >
                                 {`>>`}
                               </button>
                             </div>
@@ -198,15 +249,26 @@ function ProductCard({ product }: { product: IProduct }) {
   };
   return (
     <Card className="overflow-hidden">
-      <img
-        src={
-          "https://c.pxhere.com/photos/87/e0/food_cake_on_white-655658.jpg!d"
-        }
-        alt={product.name}
-        className="aspect-square w-full object-cover"
-        width={200}
-        height={200}
-      />
+      {(!!product.image?.url && (
+        <img
+          src={product.image.url}
+          alt={product.name}
+          className="aspect-square w-full object-contain"
+          width={200}
+          height={200}
+        />
+      )) || (
+        <img
+          src={
+            "https://c.pxhere.com/photos/87/e0/food_cake_on_white-655658.jpg!d"
+          }
+          alt={product.name}
+          className="aspect-square w-full object-cover"
+          width={200}
+          height={200}
+        />
+      )}
+
       <CardContent className="p-4">
         <h3 className="font-bold">{product.name}</h3>
         <p className="text-sm text-muted-foreground">{product.description}</p>

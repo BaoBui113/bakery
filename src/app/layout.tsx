@@ -36,9 +36,7 @@ export default function RootLayout({
           <ModalProvider>
             <AuthProvider>
               <CartProvider>
-           
-                {children}
-          
+                <div className="px-4">{children}</div>
               </CartProvider>
             </AuthProvider>
           </ModalProvider>

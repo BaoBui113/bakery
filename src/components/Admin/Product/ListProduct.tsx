@@ -7,6 +7,7 @@ import { getProducts } from "@/services/admin/product";
 import { ICategory, IProduct, IProductCustom } from "@/type";
 import { useQueries } from "@tanstack/react-query";
 import { CakeSlice, Edit, Plus, Search, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import HandleProduct from "./HandleProduct";
 
@@ -48,8 +49,23 @@ export default function ProductsComponent() {
       header: "Sản phẩm",
       render: (product: IProductCustom) => (
         <div className="flex items-center">
-          <div className="h-10 w-10 flex-shrink-0 rounded-md bg-amber-100 flex items-center justify-center">
-            <CakeSlice className="h-5 w-5 text-amber-600" />
+          <div
+            className={`h-10 w-10 relative flex-shrink-0 rounded-md flex items-center justify-center ${
+              product.image?.url ? "bg-white" : "bg-amber-100"
+            }`}
+          >
+            {!!product.image?.url ? (
+              <div>
+                <Image
+                  src={product.image.url}
+                  alt="Product preview"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            ) : (
+              <CakeSlice className="h-5 w-5 text-amber-600" />
+            )}
           </div>
           <div className="ml-4">
             <div className="text-sm font-medium text-gray-900">

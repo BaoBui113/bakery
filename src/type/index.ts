@@ -89,3 +89,18 @@ export interface IOrderForm {
   userId: string;
   quantity: number;
 }
+
+export interface IUserNotification {
+  email: string;
+  name: string;
+  role: string;
+}
+export interface INotification {
+  _id: string;
+  content: string;
+  title: string;
+  from: IUserNotification;
+  to: IUserNotification;
+  createdAt: string;
+  read: boolean;
+}
